@@ -1,0 +1,79 @@
+@import './presentation.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font variable mapping for presentation theme */
+:root {
+  --font-title: var(--font-cinzel), 'Cinzel', serif;
+  --font-body: var(--font-garamond), 'EB Garamond', serif;
+  --font-accent: var(--font-bebas), 'Bebas Neue', sans-serif;
+}
+
+/* ── Cyberpunk dark mode overrides ── */
+.dark {
+  --color-parchment: #0f1419;
+  --color-parchment-dark: #1a2332;
+  --color-titanium: #e8ecf4;
+  --color-scout-green: #00f0ff;
+  --color-scout-green-light: #5eeaff;
+  --color-garrison-red: #ff2a6d;
+  --color-leather-brown: #1e2a3a;
+  --color-accent-gold: #00f0ff;
+  --color-ink: #c8d6e5;
+}
+
+.dark body {
+  background-color: #050508;
+  color: var(--color-titanium);
+}
+
+.dark .slide {
+  border-color: #1e2a3a;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 240, 255, 0.25),
+    inset 0 0 0 7px rgba(0, 240, 255, 0.06),
+    0 0 60px rgba(0, 240, 255, 0.04);
+}
+
+.dark .slide::before,
+.dark .slide::after {
+  border-color: rgba(0, 240, 255, 0.45);
+}
+
+.dark .nav-btn {
+  border-color: rgba(0, 240, 255, 0.35);
+  background: rgba(0, 240, 255, 0.08);
+}
+
+.dark .nav-btn:hover {
+  background: rgba(0, 240, 255, 0.18);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.dark .progress-fill {
+  background: linear-gradient(90deg, #00f0ff, #ff00aa);
+}
+
+.nav-controls {
+  align-items: center;
+}
+
+.nav-controls__theme {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
