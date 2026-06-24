@@ -1,6 +1,6 @@
 headersOrigin = "inline"
 redirectsOrigin = "inline"
-functionsDirectory = "E:\\refraction-of-light\\netlify\\functions"
+functionsDirectory = "netlify/functions"
 functionsDirectoryOrigin = "config-v1"
 
 [images]
@@ -19,11 +19,11 @@ package = "@netlify/plugin-nextjs"
   [plugins.inputs]
 
 [build]
-publish = "E:\\refraction-of-light\\.next"
+publish = ".next"
 publishOrigin = "config"
 commandOrigin = "config"
 command = "npm run build"
-functions = "E:\\refraction-of-light\\netlify\\functions"
+functions = "netlify/functions"
 
   [build.environment]
 
