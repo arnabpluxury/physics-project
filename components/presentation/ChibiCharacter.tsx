@@ -5,7 +5,7 @@ import Image from 'next/image';
 type ChibiCharacterProps = {
   src: string;
   alt: string;
-  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'bottom-center-left' | 'bottom-center-right';
   size?: 'small' | 'medium' | 'large';
 };
 
@@ -21,6 +21,8 @@ export function ChibiCharacter({ src, alt, position, size = 'medium' }: ChibiCha
     'top-right': { top: '2rem', right: '2rem' },
     'bottom-left': { bottom: '5rem', left: '2rem' },
     'bottom-right': { bottom: '5rem', right: '2rem' },
+    'bottom-center-left': { bottom: '3rem', left: '30%', transform: 'translateX(-50%)' },
+    'bottom-center-right': { bottom: '3rem', right: '30%', transform: 'translateX(50%)' },
   };
 
   return (

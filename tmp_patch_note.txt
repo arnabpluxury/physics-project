@@ -1,0 +1,1 @@
+Patching SlideDeck.tsx to use semantic logo class names (nextjs/figma/wikipedia) instead of numeric suffixes.

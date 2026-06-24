@@ -2,9 +2,10 @@
 
 import Image from 'next/image';
 import type { ReactNode } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ChibiCharacter } from './ChibiCharacter';
 
-export const SLIDE_COUNT = 12;
+export const SLIDE_COUNT = 13;
 
 type SlideDeckProps = {
   activeIndex: number;
@@ -14,6 +15,110 @@ type SlideDeckProps = {
 };
 
 export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagramSlot }: SlideDeckProps) {
+  const [creditsStarted, setCreditsStarted] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+    const [logosVisible, setLogosVisible] = useState(false);
+    const creditsRollRef = useRef<HTMLDivElement | null>(null);
+    const [currentLogoIndex, setCurrentLogoIndex] = useState<number>(0);
+    const [logoCycleDone, setLogoCycleDone] = useState(false);
+
+    const logos = [
+        { src: encodeURI('/next-js-logo-next-js.gif'), alt: 'Next.js animated logo', caption: 'Animation engine made in Next.js', dur: 3200 },
+        { src: encodeURI('/7 Best Figma Plugins for Designers to Enhance Workflow _.jpg'), alt: 'Figma banner design', caption: 'Designed in Figma', dur: 2800 },
+        { src: encodeURI('/buywikilinks-wikipedia.gif'), alt: 'Wikipedia research animation', caption: 'Content from Wikipedia', dur: 2800 }
+    ];
+
+  useEffect(() => {
+    if (activeIndex === 12) {
+      setCreditsStarted(true);
+      setReloadKey((prev) => prev + 1);
+      setLogosVisible(false);
+      setCurrentLogoIndex(0);
+      setLogoCycleDone(false);
+    } else {
+      setCreditsStarted(false);
+    }
+  }, [activeIndex]);
+
+    // Fast-test: immediately show logos when credits start in fast mode
+    useEffect(() => {
+        if (!creditsStarted) return;
+        if (typeof window === 'undefined') return;
+        if (document.body.classList.contains('fast-credits')) {
+            setLogosVisible(true);
+        }
+    }, [creditsStarted]);
+
+    // Fallback: if animationend doesn't fire (reduced-motion or other), reveal logos after expected duration
+    useEffect(() => {
+        if (!creditsStarted) return;
+        if (typeof window === 'undefined') return;
+        const isFast = document.body.classList.contains('fast-credits');
+        const timeoutMs = isFast ? 7000 : 39000;
+        const t = setTimeout(() => setLogosVisible(true), timeoutMs + 800);
+        return () => clearTimeout(t);
+    }, [creditsStarted]);
+
+    // Cycle logos when logosVisible becomes true
+    useEffect(() => {
+        if (!logosVisible) return;
+        setLogoCycleDone(false);
+        setCurrentLogoIndex(0);
+        let cancelled = false;
+        const timeouts: number[] = [];
+        let elapsed = 0;
+
+        logos.forEach((logo, index) => {
+            const timer = window.setTimeout(() => {
+                if (!cancelled) {
+                    setCurrentLogoIndex(index);
+                }
+            }, elapsed);
+            timeouts.push(timer);
+            elapsed += logo.dur;
+        });
+
+        const doneTimer = window.setTimeout(() => {
+            if (!cancelled) {
+                setLogoCycleDone(true);
+            }
+        }, elapsed);
+        timeouts.push(doneTimer);
+
+        return () => {
+            cancelled = true;
+            timeouts.forEach((t) => window.clearTimeout(t));
+        };
+    }, [logosVisible]);
+
+    // Expose current index for debugging and add defensive interval to advance if needed
+    useEffect(() => {
+        // @ts-ignore - expose for dev console
+        (window as any).__CURRENT_LOGO_INDEX__ = currentLogoIndex;
+        let guard: number | undefined;
+        if (logosVisible) {
+            guard = window.setInterval(() => {
+                // if no visible item found in DOM, advance index to trigger rerender
+                const items = Array.from(document.querySelectorAll('.slide--thank-you .logo-item'));
+                const anyVisible = items.some((it) => window.getComputedStyle(it as Element).visibility === 'visible');
+                if (!anyVisible) {
+                    setCurrentLogoIndex((v) => Math.min(v + 1, logos.length - 1));
+                }
+            }, 1200);
+        }
+        return () => { if (guard) clearInterval(guard); };
+    }, [currentLogoIndex, logosVisible]);
+
+    // Dev helper: add a body class when URL contains ?fast=1 to speed up credit timings for testing
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const isFast = window.location.search.includes('fast=1');
+        if (isFast) document.body.classList.add('fast-credits');
+        return () => {
+            if (isFast) document.body.classList.remove('fast-credits');
+        };
+    }, []);
+
   const lensRowProps = (slideId: string, caseNum: string, index: number) => ({
     role: 'button' as const,
     tabIndex: 0,
@@ -40,7 +145,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
               </div>
               <ChibiCharacter src="/assets/levi.png" alt="Levi character" position="bottom-right" size="medium" />
               <div className="slide-footer">
-                  <span className="slide-number">01 / 12</span>
+                  <span className="slide-number">01 / 13</span>
               </div>
           </div>
       
@@ -87,7 +192,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">02 / 12</span>
+                  <span className="slide-number">02 / 13</span>
               </div>
               <ChibiCharacter src="/assets/mikasa.png" alt="Mikasa character" position="bottom-left" size="small" />
           </div>
@@ -137,7 +242,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">03 / 12</span>
+                  <span className="slide-number">03 / 13</span>
               </div>
               <ChibiCharacter src="/assets/hange.png" alt="Hange character" position="top-right" size="small" />
           </div>
@@ -182,7 +287,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">04 / 12</span>
+                  <span className="slide-number">04 / 13</span>
               </div>
               <ChibiCharacter src="/assets/eren.png" alt="Eren character" position="top-left" size="medium" />
           </div>
@@ -220,7 +325,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">05 / 12</span>
+                  <span className="slide-number">05 / 13</span>
               </div>
               <ChibiCharacter src="/assets/historia.png" alt="Historia character" position="bottom-right" size="small" />
           </div>
@@ -261,7 +366,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">06 / 12</span>
+                  <span className="slide-number">06 / 13</span>
               </div>              <ChibiCharacter src="/assets/erenjeager.png" alt="Eren Jeager character" position="top-right" size="medium" />          </div>
       
           
@@ -300,7 +405,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">07 / 12</span>
+                  <span className="slide-number">07 / 13</span>
               </div>
           </div>
       
@@ -339,7 +444,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">08 / 12</span>
+                  <span className="slide-number">08 / 13</span>
               </div>
               <ChibiCharacter src="/assets/mikasa.png" alt="Mikasa character" position="top-left" size="small" />
           </div>
@@ -390,7 +495,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">09 / 12</span>
+                  <span className="slide-number">09 / 13</span>
               </div>
           </div>
       
@@ -480,7 +585,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">10 / 12</span>
+                  <span className="slide-number">10 / 13</span>
               </div>
           </div>
       
@@ -513,15 +618,16 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
                   <div className="visual-container">
                       <figure className="dossier-figure">
-                          <div className="dossier-frame">
-                              <Image src="https://images.unsplash.com/photo-1606986628025-35d57e735ae0?auto=format&fit=crop&w=500&q=80" alt="Convex lens applications - camera and projector" width={500} height={350} />
+                          <div className="dossier-frame visual-placeholder visual-placeholder--convex">
+                              <div className="visual-placeholder__title">Convex Lens Applications</div>
+                              <div className="visual-placeholder__note">Cameras, projectors, and imaging systems</div>
                           </div>
                           <figcaption>Convex lenses in cameras, projectors, and optical instruments</figcaption>
                       </figure>
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">11 / 12</span>
+                  <span className="slide-number">11 / 13</span>
               </div>
               <ChibiCharacter src="/assets/hange.png" alt="Hange character" position="bottom-left" size="small" />
           </div>
@@ -555,18 +661,127 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
                   <div className="visual-container">
                       <figure className="dossier-figure">
-                          <div className="dossier-frame">
-                              <Image src="https://images.unsplash.com/photo-1591076827155-5104a7b91cea?auto=format&fit=crop&w=500&q=80" alt="Concave lens applications - eyeglasses and optical instruments" width={500} height={350} />
+                          <div className="dossier-frame visual-placeholder visual-placeholder--concave">
+                              <div className="visual-placeholder__title">Concave Lens Applications</div>
+                              <div className="visual-placeholder__note">Eyeglasses, peepholes, and optical expansion</div>
                           </div>
                           <figcaption>Concave lenses in eyeglasses, peepholes, and optical systems</figcaption>
                       </figure>
                   </div>
               </div>
               <div className="slide-footer">
-                  <span className="slide-number">12 / 12</span>
+                  <span className="slide-number">12 / 13</span>
               </div>
               <ChibiCharacter src="/assets/historia.png" alt="Historia character" position="bottom-left" size="medium" />
           </div>
-    </div>
-  );
+      
+          
+
+            {/* Slide 13 - Thank You Page (simplified/balanced) */}
+            <div
+                key={reloadKey}
+                className={`slide slide--closing slide--thank-you ${activeIndex === 12 ? 'active' : ''} ${creditsStarted ? 'credits-started' : ''} ${logosVisible ? 'logos-visible' : ''}`}
+                id="slide-thank-you"
+            >
+                <div className="thank-you-stage">
+                    <div className="credits-screen">
+                        <div className="credits-screen__hero">
+                            <span className="credits-screen__label">Grp Credits</span>
+                            <h1 className="credits-screen__title">Thank You for Your Precious Time</h1>
+                            <p className="credits-screen__subtitle">The credits roll first, then the project sources, then the final thank-you screen.</p>
+                        </div>
+
+                        <div className="credits-viewport" aria-label="Rolling movie credits">
+                            <div ref={creditsRollRef} className="credits-roll" onAnimationEnd={() => setLogosVisible(true)}>
+                                <div className="credits-block credits-block--title">Presentation Credits</div>
+                                <div className="credits-row">
+                                    <span className="credits-name">Chayan Nath</span>
+                                    <span className="credits-detail">Research & Slide Content · Slides 1–4</span>
+                                </div>
+                                <div className="credits-row">
+                                    <span className="credits-name">Arnab Barua</span>
+                                    <span className="credits-detail">Designing & Explanation · Slides 5–8</span>
+                                </div>
+                                <div className="credits-row">
+                                    <span className="credits-name">Riya Sharma</span>
+                                    <span className="credits-detail">Lens Case Studies & Charts · Slides 9–10</span>
+                                </div>
+                                <div className="credits-row">
+                                    <span className="credits-name">Karan Mehta</span>
+                                    <span className="credits-detail">Visual Flow & Final Summary · Slides 11–13</span>
+                                </div>
+                                <div className="credits-row">
+                                    <span className="credits-name">Priya Singh</span>
+                                    <span className="credits-detail">Animations & Motion Design · Visual Effects</span>
+                                </div>
+                                <div className="credits-row">
+                                    <span className="credits-name">Rohan Das</span>
+                                    <span className="credits-detail">Final Review & QA · Presentation Polish</span>
+                                </div>
+                                <div className="credits-subtitle">Creative Production</div>
+                                <div className="credits-endline">Thank you for watching — keep exploring optical science.</div>
+                            </div>
+
+                            <div
+                                className="logo-reveal"
+                                style={{
+                                    opacity: logosVisible ? 1 : 0,
+                                    visibility: logosVisible ? 'visible' : 'hidden',
+                                    pointerEvents: logosVisible ? 'auto' : 'none',
+                                }}
+                            >
+                                {logos.map((logo, i) => {
+                                        const semantic = ['nextjs','figma','wikipedia'][i] ?? `logo-${i}`;
+                                        return (
+                                    <div
+                                        key={logo.src}
+                                        className={`logo-item logo-item--${semantic} logo-item--rotator`}
+                                        style={{
+                                            position: 'absolute',
+                                            inset: 0,
+                                            display: currentLogoIndex === i ? 'grid' : 'none',
+                                            placeItems: 'center',
+                                            opacity: 1,
+                                            visibility: currentLogoIndex === i ? 'visible' : 'hidden',
+                                            pointerEvents: currentLogoIndex === i ? 'auto' : 'none',
+                                            transform: currentLogoIndex === i ? 'scale(1)' : 'scale(0.98)',
+                                            transition: 'opacity 0.7s ease, transform 0.7s ease',
+                                        }}
+                                    >
+                                        <div className="logo-card" style={{ width: '80vw', maxWidth: 900 }}>
+                                            <div className="logo-media" style={{ position: 'relative', width: '100%', height: '60vh' }}>
+                                                <Image src={logo.src} alt={logo.alt} fill unoptimized style={{ objectFit: 'contain' }} />
+                                            </div>
+                                            <p className="logo-caption">{logo.caption}</p>
+                                        </div>
+                                    </div>
+                                        );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="final-screen">
+                        <div className="final-moment">
+                            <p className="final-greeting">THANK YOU</p>
+                            <h2>For watching the full presentation.</h2>
+                            <p className="final-copy">Created with care in Next.js, designed in Figma, and researched through Wikipedia.</p>
+                            <div className="final-chibis">
+                                <ChibiCharacter src="/assets/levi.png" alt="Levi" position="bottom-left" size="small" />
+                                <ChibiCharacter src="/assets/mikasa.png" alt="Mikasa" position="bottom-center-left" size="small" />
+                                <ChibiCharacter src="/assets/eren.png" alt="Eren" position="bottom-center-right" size="small" />
+                                <ChibiCharacter src="/assets/hange.png" alt="Hange" position="bottom-right" size="small" />
+                                <ChibiCharacter src="/assets/historia.png" alt="Historia" position="top-left" size="small" />
+                                <ChibiCharacter src="/assets/erenjeager.png" alt="Eren Jeager" position="top-right" size="small" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="slide-footer hidden-footer">
+                        <span className="slide-number">13 / 13</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
