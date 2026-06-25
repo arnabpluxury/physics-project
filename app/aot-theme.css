@@ -408,7 +408,8 @@
 .slide-footer {
     position: absolute;
     bottom: var(--tv-safe-y);
-    right: var(--tv-safe-x);
+    left: var(--tv-safe-x);
+    right: auto;
     font-family: var(--font-accent);
     font-size: 0.85rem;
     color: var(--aot-secondary);

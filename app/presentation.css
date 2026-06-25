@@ -118,6 +118,35 @@ body {
     text-transform: uppercase;
 }
 
+.title-meta {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.title-meta-text {
+    text-align: left;
+}
+
+.title-meta-label {
+    color: rgba(42, 33, 24, 0.72);
+    font-size: clamp(0.95rem, 1.1vw, 1rem);
+    margin-bottom: 4px;
+}
+
+.title-meta-value {
+    font-family: var(--font-accent);
+    font-size: clamp(1.4rem, 2vw, 1.7rem);
+    color: var(--color-leather-brown);
+}
+
+.title-logo {
+    width: clamp(70px, 7vw, 96px);
+    height: auto;
+    flex-shrink: 0;
+}
+
 .title-card .title-sub {
     font-family: var(--font-accent);
     font-size: clamp(1.4rem, 2.5vw, 2.2rem);
@@ -442,18 +471,48 @@ body {
     align-items: center;
     justify-content: center;
     padding: 0 32px 32px;
-    background: #000;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 0%, #000 40%),
+                linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(59, 130, 246, 0.05) 50%, #000 100%);
     opacity: 0;
     pointer-events: none;
     z-index: 3;
-    animation: revealFinalScreen 1s ease forwards;
+    animation: revealFinalScreen 1.2s ease forwards;
     animation-delay: 65.5s;
+    overflow: hidden;
+}
+
+.final-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(255, 107, 107, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .final-moment {
     text-align: center;
     max-width: 940px;
     color: #f8fafc;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    animation: slideUpIn 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideUpIn {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .final-greeting {
@@ -485,6 +544,19 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     gap: 24px;
+    margin-top: 48px;
+    animation: fadeInStagger 1.2s ease-out forwards;
+}
+
+@keyframes fadeInStagger {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .visual-placeholder {
@@ -878,8 +950,8 @@ body {
 }
 
 .content-grid--dense .dossier-frame img {
-    max-width: min(42vw, 640px);
-    max-height: min(58vh, 520px);
+    max-width: min(60vw, 880px);
+    max-height: min(72vh, 720px);
     object-fit: contain;
 }
 
@@ -1511,8 +1583,8 @@ body.lens-modal-open .presentation-chrome {
     display: block;
     width: auto;
     height: auto;
-    max-width: min(48vw, 720px);
-    max-height: min(52vh, 480px);
+    max-width: min(76vw, 960px);
+    max-height: min(78vh, 840px);
     object-fit: contain;
 }
 
@@ -1591,8 +1663,9 @@ body.lens-modal-open .presentation-chrome {
 /* --- FOOTER --- */
 .slide-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 0.75rem;
     border-top: 1px solid rgba(0,0,0,0.1);
     padding-top: 15px;
     margin-top: 10px;
@@ -1611,10 +1684,15 @@ body.lens-modal-open .presentation-chrome {
 }
 
 .slide-number {
+    position: static;
     font-family: var(--font-accent);
     font-size: clamp(1.3rem, 2vw, 1.65rem);
     color: var(--color-leather-brown);
     letter-spacing: 2px;
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
 }
 
 /* --- CHROME --- */
@@ -1701,8 +1779,8 @@ body.lens-modal-open .presentation-chrome {
     }
 
     .dossier-frame img {
-        max-width: min(46vw, 780px);
-        max-height: min(54vh, 520px);
+        max-width: min(72vw, 920px);
+        max-height: min(66vh, 760px);
     }
 
     .dossier-table {
@@ -1735,8 +1813,8 @@ body.lens-modal-open .presentation-chrome {
     }
 
     .dossier-frame img {
-        max-width: min(92vw, 680px);
-        max-height: min(42vh, 420px);
+        max-width: min(92vw, 760px);
+        max-height: min(54vh, 520px);
     }
 
     .visual-container--diagram {

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import type { ReactNode } from 'react';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { ChibiCharacter } from './ChibiCharacter';
 
 export const SLIDE_COUNT = 13;
@@ -22,11 +22,14 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
     const [currentLogoIndex, setCurrentLogoIndex] = useState<number>(0);
     const [logoCycleDone, setLogoCycleDone] = useState(false);
 
-    const logos = [
-        { src: encodeURI('/next-js-logo-next-js.gif'), alt: 'Next.js animated logo', caption: 'Animation engine made in Next.js', dur: 3200 },
-        { src: encodeURI('/7 Best Figma Plugins for Designers to Enhance Workflow _.jpg'), alt: 'Figma banner design', caption: 'Designed in Figma', dur: 2800 },
-        { src: encodeURI('/buywikilinks-wikipedia.gif'), alt: 'Wikipedia research animation', caption: 'Content from Wikipedia', dur: 2800 }
-    ];
+    const logos = useMemo(
+      () => [
+        { src: encodeURI('/next-js-logo-next-js.gif'), alt: 'Next.js animated logo', caption: 'Animation engine made in Next.js', dur: 4500 },
+        { src: encodeURI('/7 Best Figma Plugins for Designers to Enhance Workflow _.jpg'), alt: 'Figma banner design', caption: 'Designed in Figma', dur: 4200 },
+        { src: encodeURI('/buywikilinks-wikipedia.gif'), alt: 'Wikipedia research animation', caption: 'Content from Wikipedia', dur: 4200 }
+      ],
+      []
+    );
 
   useEffect(() => {
     if (activeIndex === 12) {
@@ -40,7 +43,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
     }
   }, [activeIndex]);
 
-    // Fast-test: immediately show logos when credits start in fast mode
+  // Fast-test: immediately show logos when credits start in fast mode
     useEffect(() => {
         if (!creditsStarted) return;
         if (typeof window === 'undefined') return;
@@ -89,7 +92,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
             cancelled = true;
             timeouts.forEach((t) => window.clearTimeout(t));
         };
-    }, [logosVisible]);
+    }, [logosVisible, logos]);
 
     // Expose current index for debugging and add defensive interval to advance if needed
     useEffect(() => {
@@ -107,7 +110,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
             }, 1200);
         }
         return () => { if (guard) clearInterval(guard); };
-    }, [currentLogoIndex, logosVisible]);
+    }, [currentLogoIndex, logosVisible, logos.length]);
 
     // Dev helper: add a body class when URL contains ?fast=1 to speed up credit timings for testing
     useEffect(() => {
@@ -138,10 +141,19 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
       <div className={`slide slide--title ${activeIndex === 0 ? 'active' : ''}`} id="slide-1">
               <div className="title-card">
                   <h1>Refraction of Light: The Illusion of Bending</h1>
-                  <p className="title-sub">Title & Introduction ·</p>
+                  <p className="title-sub">Refraction ·</p>
                   <p className="title-tagline">Welcome to our presentation on the Refraction of Light.</p>
                   <p className="title-intro">Light usually travels in a straight line, but only when it&apos;s in the same medium.</p>
                   <p className="title-intro">What happens when it jumps from air to glass, or water to air? <strong>It bends.</strong></p>
+                  <div className="title-meta">
+                      <div className="title-logo">
+                          <Image src="/assets/smi_logo.png" alt="SMI school logo" width={96} height={96} />
+                      </div>
+                      <div className="title-meta-text">
+                          <p className="title-meta-label">Presented to</p>
+                          <p className="title-meta-value">Durba Paul</p>
+                      </div>
+                  </div>
               </div>
               <ChibiCharacter src="/assets/levi.png" alt="Levi character" position="bottom-right" size="medium" />
               <div className="slide-footer">
@@ -182,7 +194,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   <div className="visual-container visual-container--diagram">
                       <figure className="dossier-figure">
                           <div className="dossier-frame">
-                              <Image src="/assets/whatisrefraction.png" alt="Refraction diagram showing incident ray, refracted ray, normal line, and angles of incidence and refraction" width={400} height={300} />
+                              <Image src="/assets/whatisrefraction.png" alt="Refraction diagram showing incident ray, refracted ray, normal line, and angles of incidence and refraction" width={760} height={570} />
                           </div>
                           <figcaption className="dossier-caption">
                               <span className="dossier-caption__label">Refraction at a Boundary</span>
@@ -232,7 +244,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   <div className="visual-container visual-container--diagram">
                       <figure className="dossier-figure">
                           <div className="dossier-frame">
-                              <Image src="/assets/whylightbends.png" alt="Wavefront pivot diagram showing why light bends as it enters water from air" width={400} height={300} />
+                              <Image src="/assets/whylightbends.png" alt="Wavefront pivot diagram showing why light bends as it enters water from air" width={760} height={570} />
                           </div>
                           <figcaption className="dossier-caption">
                               <span className="dossier-caption__label">The Wavefront Pivot</span>
@@ -277,7 +289,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   <div className="visual-container visual-container--diagram">
                       <figure className="dossier-figure">
                           <div className="dossier-frame">
-                              <Image src="/assets/lateraldisplace.png" alt="Lateral displacement diagram showing incident ray, emergent ray, and perpendicular shift through a glass slab" width={400} height={300} />
+                              <Image src="/assets/lateraldisplace.png" alt="Lateral displacement diagram showing incident ray, emergent ray, and perpendicular shift through a glass slab" width={760} height={570} />
                           </div>
                           <figcaption className="dossier-caption">
                               <span className="dossier-caption__label">Lateral Displacement (d)</span>
@@ -315,7 +327,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   <div className="visual-container visual-container--diagram">
                       <figure className="dossier-figure">
                           <div className="dossier-frame">
-                              <Image src="/assets/bendingofstick.png" alt="Refraction diagram showing light bending at the boundary between two media" width={400} height={300} />
+                              <Image src="/assets/bendingofstick.png" alt="Refraction diagram showing light bending at the boundary between two media" width={760} height={570} />
                           </div>
                           <figcaption className="dossier-caption">
                               <span className="dossier-caption__label">Refraction at the Boundary</span>
@@ -356,7 +368,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   <div className="visual-container visual-container--diagram">
                       <figure className="dossier-figure">
                           <div className="dossier-frame">
-                              <Image src="/assets/firstlaw.png" alt="First Law of Refraction diagram with incident ray, refracted ray, and normal in the same plane through a glass slab" width={400} height={300} />
+                              <Image src="/assets/firstlaw.png" alt="First Law of Refraction diagram with incident ray, refracted ray, and normal in the same plane through a glass slab" width={760} height={570} />
                           </div>
                           <figcaption className="dossier-caption">
                               <span className="dossier-caption__label">First Law Verified</span>
@@ -395,7 +407,7 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   <div className="visual-container visual-container--diagram">
                       <figure className="dossier-figure">
                           <div className="dossier-frame">
-                              <Image src="/assets/snellslaw.png" alt="Snell&apos;s Law diagram showing light refracting from air into water with angles θ₁ and θ₂" width={400} height={300} />
+                              <Image src="/assets/snellslaw.png" alt="Snell&apos;s Law diagram showing light refracting from air into water with angles θ₁ and θ₂" width={760} height={570} />
                           </div>
                           <figcaption className="dossier-caption">
                               <span className="dossier-caption__label">Snell&apos;s Law of Refraction</span>
@@ -618,9 +630,13 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
                   <div className="visual-container">
                       <figure className="dossier-figure">
-                          <div className="dossier-frame visual-placeholder visual-placeholder--convex">
-                              <div className="visual-placeholder__title">Convex Lens Applications</div>
-                              <div className="visual-placeholder__note">Cameras, projectors, and imaging systems</div>
+                          <div className="dossier-frame">
+                              <Image
+                                  src="/assets/application-of-convex-lens.jpg"
+                                  alt="Convex lens applications in cameras, projectors, and optical systems"
+                                  width={900}
+                                  height={560}
+                              />
                           </div>
                           <figcaption>Convex lenses in cameras, projectors, and optical instruments</figcaption>
                       </figure>
@@ -661,9 +677,13 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                   </div>
                   <div className="visual-container">
                       <figure className="dossier-figure">
-                          <div className="dossier-frame visual-placeholder visual-placeholder--concave">
-                              <div className="visual-placeholder__title">Concave Lens Applications</div>
-                              <div className="visual-placeholder__note">Eyeglasses, peepholes, and optical expansion</div>
+                          <div className="dossier-frame">
+                              <Image
+                                  src="/assets/application-concave-lens.jpg"
+                                  alt="Concave lens applications in eyeglasses, peepholes, and optical systems"
+                                  width={900}
+                                  height={560}
+                              />
                           </div>
                           <figcaption>Concave lenses in eyeglasses, peepholes, and optical systems</figcaption>
                       </figure>
@@ -695,31 +715,31 @@ export function SlideDeck({ activeIndex, onLensRowClick, activeLensRow, rayDiagr
                             <div ref={creditsRollRef} className="credits-roll" onAnimationEnd={() => setLogosVisible(true)}>
                                 <div className="credits-block credits-block--title">Presentation Credits</div>
                                 <div className="credits-row">
+                                    <span className="credits-name">Aditya Roy</span>
+                                    <span className="credits-detail">Slide Content · Slides 2-3</span>
+                                </div>
+                                <div className="credits-row">
+                                    <span className="credits-name">Pritam Nath</span>
+                                    <span className="credits-detail">Slide Content · Slides 4-5</span>
+                                </div>
+                                <div className="credits-row">
                                     <span className="credits-name">Chayan Nath</span>
-                                    <span className="credits-detail">Research & Slide Content · Slides 1–4</span>
+                                    <span className="credits-detail">Research & Slide Content · Slides 6-7</span>
                                 </div>
                                 <div className="credits-row">
                                     <span className="credits-name">Arnab Barua</span>
-                                    <span className="credits-detail">Designing & Explanation · Slides 5–8</span>
+                                    <span className="credits-detail">Animations, Motion Designing & Slide Content · Slides 8-9</span>
                                 </div>
                                 <div className="credits-row">
-                                    <span className="credits-name">Riya Sharma</span>
-                                    <span className="credits-detail">Lens Case Studies & Charts · Slides 9–10</span>
+                                    <span className="credits-name">Subha Deb Nath</span>
+                                    <span className="credits-detail">Slide Content · Slides 10</span>
                                 </div>
                                 <div className="credits-row">
-                                    <span className="credits-name">Karan Mehta</span>
-                                    <span className="credits-detail">Visual Flow & Final Summary · Slides 11–13</span>
+                                    <span className="credits-name">Soumik Nath</span>
+                                    <span className="credits-detail">Slide Content · Slides 11-12</span>
                                 </div>
-                                <div className="credits-row">
-                                    <span className="credits-name">Priya Singh</span>
-                                    <span className="credits-detail">Animations & Motion Design · Visual Effects</span>
-                                </div>
-                                <div className="credits-row">
-                                    <span className="credits-name">Rohan Das</span>
-                                    <span className="credits-detail">Final Review & QA · Presentation Polish</span>
-                                </div>
-                                <div className="credits-subtitle">Creative Production</div>
-                                <div className="credits-endline">Thank you for watching — keep exploring optical science.</div>
+                                <div className="credits-subtitle">Class 10</div>
+                                <div className="credits-endline">Thank you for Your Precious Time — keep exploring optical science.</div>
                             </div>
 
                             <div
