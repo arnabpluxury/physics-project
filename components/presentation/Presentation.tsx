@@ -48,8 +48,8 @@ export function Presentation() {
   }, []);
 
   const getActiveChartSlideId = useCallback((): string | null => {
-    if (activeIndex === 8) return 'slide-11';
-    if (activeIndex === 9) return 'slide-concave';
+    if (activeIndex === 8) return 'slide-concave';
+    if (activeIndex === 9) return 'slide-11';
     return null;
   }, [activeIndex]);
 
